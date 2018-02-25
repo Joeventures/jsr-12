@@ -189,6 +189,7 @@ nav ul ul li {
 .article {
   border-bottom: 1px solid #ccc;
   transition: 0.2s all;
+  cursor: pointer;
 }
 
 .article:hover {

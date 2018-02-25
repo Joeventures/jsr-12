@@ -7,6 +7,8 @@ Source: The Economist, via NewsAPI
 API Key: ae402f69d5fa4afeb2ca46a67b23e01b
  */
 function getEconomist() {
+  loading();
+  clearArticles();
   var url = "https://newsapi.org/v2/top-headlines";
   url += '?' + $.param({'sources': 'the-economist'});
   url += '&' + $.param({'apiKey': 'ae402f69d5fa4afeb2ca46a67b23e01b'});
@@ -32,6 +34,7 @@ function getEconomist() {
         buildArticle(results[i]);
       }
     }
+    finishLoading(true);
   }).fail(function (err) {
     console.log(err);
   });
@@ -43,7 +46,8 @@ function getEconomist() {
   API Key: 3d880d5967c649b595beb5e5eaba12ae
 */
 function getNyt() {
-
+  loading();
+  clearArticles();
   var url = "https://api.nytimes.com/svc/topstories/v2/home.json";
   url += '?' + $.param({'api-key': "3d880d5967c649b595beb5e5eaba12ae"});
   var results = [];
@@ -65,6 +69,7 @@ function getNyt() {
     for (i = 0; i < results.length; i++) {
       buildArticle(results[i]);
     }
+    finishLoading(true);
   }).fail(function (err) {
     console.log(err);
   });
@@ -149,14 +154,54 @@ function buildArticle(data) {
     '<section class="impressions">' +
     data["length"] +
     '</section>' +
+    '<summary class="hidden">'+data.content+'</summary>' +
+    '<a class="hidden source-link" href="'+data.link+'">'+data.link+'</a>' +
     '<div class="clearfix"></div>' +
     '</article>';
   $('#main').append(articleSec);
 }
 
+function clearArticles() {
+  $('article').remove();
+}
+
+function loading() {
+  $('#popUp').addClass('loader').removeClass('hidden');
+}
+
+function finishLoading(removePopUp) {
+  removePopUp = removePopUp || false;
+  $('#popUp').removeClass('loader');
+  if(removePopUp) {
+    $('#popUp').addClass('hidden');
+
+    $('article').click(function () {
+      var summary = $(this).children('summary')[0].innerText;
+      var link = $(this).children('a.source-link')[0].href;
+      showSummary(summary, link);
+    });
+  }
+}
+
+function showSummary(summaryText, articleUrl) {
+  loading();
+  $('#popUp .container p')[0].innerText = summaryText;
+  $('.popUpAction').attr('href', articleUrl);
+  finishLoading();
+}
+
 $(document).ready(function () {
   $('a[href$="#nyt"]').click(function () {
-    var nyt = getNyt();
-  })
-});
+    getNyt();
+  });
 
+  $('a[href$="#econ"]').click(function () {
+    getEconomist();
+  });
+
+  $('.closePopUp').click(function () {
+    finishLoading(true);
+  });
+}).keyup(function(k) {
+  if(k.key == 'Escape') finishLoading(true);
+});
