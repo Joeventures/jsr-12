@@ -3,14 +3,44 @@
 */
 
 /*
+Source: The Economist, via NewsAPI
+API Key: ae402f69d5fa4afeb2ca46a67b23e01b
+ */
+function getEconomist() {
+  var url = "https://newsapi.org/v2/top-headlines";
+  url += '?' + $.param({'sources': 'the-economist'});
+  url += '&' + $.param({'apiKey': 'ae402f69d5fa4afeb2ca46a67b23e01b'});
+  console.log(url);
+  var results = [];
+  $.ajax({
+    url: url,
+    method: 'GET'
+  }).done(function (result) {
+    console.log(result);
+    var resultSet = result.articles;
+    for(var i in resultSet) {
+      iResult = resultSet[i];
+      results.push({
+        title: iResult["title"],
+        content: iResult["description"],
+        link: iResult["url"],
+        imageSource: iResult["urlToImage"],
+        category: "Economics",
+        length: resultSet[i]["description"].length
+      });
+      for(var i in results) {
+        buildArticle(results[i]);
+      }
+    }
+  }).fail(function (err) {
+    console.log(err);
+  });
+  return results;
+}
+
+/*
   Source: NY Times Top Stories
-  Info: https://api.nytimes.com/svc/news/v3/content/content.json
   API Key: 3d880d5967c649b595beb5e5eaba12ae
-  Image Source: multimedia: [ { url: ..., format: "Standard Thumbnail" }, ... ]
-  Category:
-  A Number:
-  Article Text (for pop-up screen):
-  Article link:
 */
 function getNyt() {
 
@@ -27,7 +57,7 @@ function getNyt() {
         title: resultSet[i]["title"],
         content: resultSet[i]["abstract"],
         link: resultSet[i]["url"],
-        imageSource: getNytImage(resultSet[i]["multimedia"]).url,
+        imageSource: getNytImage(resultSet[i]["multimedia"]),
         category: getNytCategory(resultSet[i]),
         length: resultSet[i]["abstract"].length
       });
@@ -42,9 +72,15 @@ function getNyt() {
 
   // Get a thumbnail image from a NYT multimedia object
   function getNytImage(mediaObj) {
-    return mediaObj.find(function (obj) {
-      return obj["format"] == "Standard Thumbnail";
-    });
+    var img = "";
+    if(mediaObj.length == 0) {
+      img = "images/no.png"
+    } else {
+      img = mediaObj.find(function (obj) {
+        return obj["format"] == "Standard Thumbnail";
+      }).url;
+    }
+    return img;
   }
 
   // Get the category
