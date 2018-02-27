@@ -16,7 +16,7 @@ function getEconomist() {
   $.ajax({
     url: url,
     method: 'GET'
-  }).done(function (result) {
+  }).success(function (result) {
     var resultSet = result.articles;
     for(var i in resultSet) {
       iResult = resultSet[i];
@@ -34,6 +34,7 @@ function getEconomist() {
     }
     finishLoading(true);
   }).fail(function (err) {
+    showError("the Economist");
     console.log(err);
   });
   return results;
@@ -52,7 +53,7 @@ function getNyt() {
   $.ajax({
     url: url,
     method: 'GET'
-  }).done(function (result) {
+  }).success(function (result) {
     var resultSet = result["results"];
     for (i = 0; i < resultSet.length; i++) {
       results.push({
@@ -69,6 +70,7 @@ function getNyt() {
     }
     finishLoading(true);
   }).fail(function (err) {
+    showError("the New York Times");
     console.log(err);
   });
   return results;
@@ -131,7 +133,7 @@ function getFT() {
     dataType: "json",
     data: JSON.stringify(data),
     method: "POST"
-  }).done(function (result) {
+  }).success(function (result) {
     var resultSet = result.results[0].results;
     console.log(resultSet);
     for(var i in resultSet) {
@@ -151,6 +153,7 @@ function getFT() {
     }
     finishLoading(true);
   }).fail(function (err) {
+    showError("the Financial Times");
     console.log(err);
   });
   return results;
@@ -218,6 +221,11 @@ function showSummary(articleTitle, summaryText, articleUrl) {
   finishLoading();
 }
 
+function showError(sourceName) {
+  finishLoading(true);
+  console.log(sourceName);
+}
+
 $(document).ready(function () {
   $('a[href$="#nyt"]').click(function () {
     getNyt();
@@ -234,6 +242,8 @@ $(document).ready(function () {
   $('.closePopUp').click(function () {
     finishLoading(true);
   });
+
+  getNyt();
 }).keyup(function(k) {
   if(k.key == 'Escape') finishLoading(true);
 });
