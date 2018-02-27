@@ -179,6 +179,7 @@ function buildArticle(data) {
     '<section class="impressions">' +
     data["length"] +
     '</section>' +
+    '<div class="hidden source-title">'+data.title+'</div>'+
     '<summary class="hidden">'+data.content+'</summary>' +
     '<a class="hidden source-link" href="'+data.link+'">'+data.link+'</a>' +
     '<div class="clearfix"></div>' +
@@ -201,15 +202,17 @@ function finishLoading(removePopUp) {
     $('#popUp').addClass('hidden');
 
     $('article').click(function () {
+      var title = $(this).children('.source-title')[0].innerText;
       var summary = $(this).children('summary')[0].innerText;
       var link = $(this).children('a.source-link')[0].href;
-      showSummary(summary, link);
+      showSummary(title, summary, link);
     });
   }
 }
 
-function showSummary(summaryText, articleUrl) {
+function showSummary(articleTitle, summaryText, articleUrl) {
   loading();
+  $('#popUp h1')[0].innerText = articleTitle;
   $('#popUp .container p')[0].innerText = summaryText;
   $('.popUpAction').attr('href', articleUrl);
   finishLoading();
