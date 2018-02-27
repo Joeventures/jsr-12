@@ -6,7 +6,7 @@
 
 #popUp {
   opacity: 0.95;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
