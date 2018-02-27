@@ -236,3 +236,14 @@ nav ul ul li {
   text-align: right;
   color: #097FB2;
 }
+
+#main .error {
+  position: fixed;
+  top: 65px;
+  height: calc(100% - 65px);
+  width: 100%;
+  left: 0;
+  text-align: center;
+  padding-top: 2em;
+  z-index: -1;
+}

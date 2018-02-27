@@ -223,6 +223,16 @@ function showSummary(articleTitle, summaryText, articleUrl) {
 
 function showError(sourceName) {
   finishLoading(true);
+  var $errDiv = $('#main .error');
+  $errDiv.removeClass('hidden');
+  if(sourceName.length > 0) {
+    $errDiv.children('.the-source')[0].innerText = sourceName;
+  } else {
+    $errDiv.children('.the-source')[0].innerText = 'the source';
+  }
+  $('a').click(function() {
+    $errDiv.addClass('hidden');
+  });
   console.log(sourceName);
 }
 
