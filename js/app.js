@@ -12,13 +12,11 @@ function getEconomist() {
   var url = "https://newsapi.org/v2/top-headlines";
   url += '?' + $.param({'sources': 'the-economist'});
   url += '&' + $.param({'apiKey': 'ae402f69d5fa4afeb2ca46a67b23e01b'});
-  console.log(url);
   var results = [];
   $.ajax({
     url: url,
     method: 'GET'
   }).done(function (result) {
-    console.log(result);
     var resultSet = result.articles;
     for(var i in resultSet) {
       iResult = resultSet[i];
@@ -110,25 +108,52 @@ function getNyt() {
 
 */
 function getFT() {
+  loading();
+  clearArticles();
   var ftKey = "59cbaf20e3e06d3565778e7b3eea8499b81a49bbaf7ba01c19fe21a1";
-  var url = "http://api.ft.com/content/search/v1";
+  var url = "https://peaceful-lake-77400.herokuapp.com/";
+  var rootUrl = "http://api.ft.com/content/search/v1";
   var data = {
     "queryString": "banks",
     "resultContext": {
       "aspects": ["title", "lifecycle", "location", "summary", "editorial"]
     }
   };
+  var results = [];
   $.ajax({
     url: url,
-    headers: {"X-Api-Key": ftKey, "Content-Type": "application/json"},
+    headers: {
+      "X-Api-Key": ftKey,
+      "Content-Type": "application/json",
+      "Target-URL": rootUrl
+    },
     contentType: "application/json",
-    dataType: "jsonp",
-    data: data,
+    dataType: "json",
+    data: JSON.stringify(data),
     method: "POST"
-  }).done(function (msg) {
-    console.log(msg);
+  }).done(function (result) {
+    var resultSet = result.results[0].results;
+    console.log(resultSet);
+    for(var i in resultSet) {
+      iResult = resultSet[i];
+      var content = iResult["summary"]["excerpt"] || "No summary available";
+      results.push({
+        title: iResult["title"]["title"],
+        content: content,
+        link: iResult["location"]["uri"],
+        imageSource: "images/no.png",
+        category: "Stuffy Brits",
+        length: content.length || 0
+      });
+      for(var i in results) {
+        buildArticle(results[i]);
+      }
+    }
+    finishLoading(true);
+  }).fail(function (err) {
+    console.log(err);
   });
-
+  return results;
 }
 
 /*
@@ -197,6 +222,10 @@ $(document).ready(function () {
 
   $('a[href$="#econ"]').click(function () {
     getEconomist();
+  });
+
+  $('a[href$="#ft"]').click(function () {
+    getFT();
   });
 
   $('.closePopUp').click(function () {
