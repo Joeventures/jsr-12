@@ -253,6 +253,10 @@ $(document).ready(function () {
     finishLoading(true);
   });
 
+  $('#search a').click(function() {
+    $('#search').toggleClass('active');
+  });
+
   getNyt();
 }).keyup(function(k) {
   if(k.key == 'Escape') finishLoading(true);
